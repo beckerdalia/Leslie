@@ -1,7 +1,9 @@
+# -*- coding: latin-1 -*-
 from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
 
+#------------------------------------------------
 def exemple1():
     ngroupes=3
     u = np.zeros(ngroupes)
@@ -13,6 +15,7 @@ def exemple1():
     print("A",A)
     return A, u
 
+#------------------------------------------------
 def exemple2():
     ngroupes=2
     u = np.zeros(ngroupes)
@@ -23,11 +26,18 @@ def exemple2():
     print("A",A)
     return A, u
 
-A, u = exemple2()
+A, u = exemple1()
+ng = u.shape[0]
+# on recupère le nombre de groupes
 uall = []
 niter = 40
-for i in range(niter):
+for k in range(niter):
     uall.append(u)
     u = A.dot(u)
-plt.plot(uall)
+for i in range(ng):
+    plt.plot(np.array(uall)[:,i], label=r"N_{}".format(i))
+    # il faut convertir uall en np.array (de taille shape=(niter, ng))
+plt.plot(np.sum(np.array(uall),axis=1), label=r"N")
+# pour la population complète, np.sum avec la moyenne sur la deuxième dimension 'axis=1'
+plt.legend()
 plt.show()
