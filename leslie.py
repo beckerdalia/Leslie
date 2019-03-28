@@ -26,8 +26,22 @@ def exemple2():
     A[1] = [.75, 0]
     print("A",A)
     return A, u
+#------------------------------------------------
+def exemple3():
+    ngroupes=3
+    u = np.zeros(ngroupes)
+    u[0]=30
+    u[1]=40
+    u[2]=30
+    A = np.empty(shape=(ngroupes,ngroupes))
+    A[0] = [0, 6, 10]
+    A[1] = [.5, 0, 0]
+    A[2] = [0, 0.4, 0]
+    print("A",A)
+    return A, u
 
-A, u = exemple1()
+A, u = exemple3()
+
 ng = u.shape[0]
 # on recupère le nombre de groupes
 uall = []
@@ -45,6 +59,7 @@ plt.legend()
 plt.show()
 
 eigvals = linalg.eigvals(A)
+print("eigvals", eigvals)
 lam1 = np.max(np.absolute(eigvals))
 # calcul de la v.p. de Perron-Frobenius (= rayon spectral)
 plt.plot(np.real(eigvals), np.imag(eigvals), 'X', label=r"$\lambda$")
@@ -63,3 +78,12 @@ plt.xlabel('Re')
 plt.legend()
 plt.title(r"Nous avons $\lambda_1\approx${}".format(np.round(lam1,3)))
 plt.show()
+
+A, u = exemple3()
+niter = 20
+for iter in range(niter):
+    v = A.dot(u)
+    lam = np.sum(v)/np.sum(u)
+    v /= np.sum(v)
+    print("iter", iter, "lam", lam, "26*v=", 26*v.T)
+    u = v
