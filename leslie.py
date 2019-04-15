@@ -40,50 +40,65 @@ def exemple3():
     print("A",A)
     return A, u
 
-A, u = exemple3()
+#------------------------------------------------
+def solveOde(u, A, niter = 40):
+    ng = u.shape[0]
+    # on recupère le nombre de groupes
+    uall = []
+    for k in range(niter):
+        uall.append(u)
+        u = A.dot(u)
+    uall = np.array(uall)
+    # pour faire les plots un à un, il faut convertir uall en np.array (de taille shape=(niter, ng))
+    for i in range(ng):
+        plt.plot(uall[:, i], label=r"N_{}".format(i))
+    plt.plot(np.sum(uall, axis=1), label=r"N")
+    # pour la population complète, np.sum avec la moyenne sur la deuxième dimension 'axis=1'
+    plt.legend()
+    plt.show()
 
-ng = u.shape[0]
-# on recupère le nombre de groupes
-uall = []
-niter = 40
-for k in range(niter):
-    uall.append(u)
-    u = A.dot(u)
-uall = np.array(uall)
-# pour faire les plots un à un, il faut convertir uall en np.array (de taille shape=(niter, ng))
-for i in range(ng):
-    plt.plot(uall[:,i], label=r"N_{}".format(i))
-plt.plot(np.sum(uall,axis=1), label=r"N")
-# pour la population complète, np.sum avec la moyenne sur la deuxième dimension 'axis=1'
-plt.legend()
-plt.show()
+#------------------------------------------------
+def powerIteration(u, A, niter = 20):
+    for iter in range(niter):
+        v = A.dot(u)
+        lam = np.sum(v) / np.sum(u)
+        v /= np.sum(v)
+        print("iter", iter, "lam", lam, "26*v=", 26 * v.T)
+        u = v
 
-eigvals = linalg.eigvals(A)
-print("eigvals", eigvals)
-lam1 = np.max(np.absolute(eigvals))
-# calcul de la v.p. de Perron-Frobenius (= rayon spectral)
-plt.plot(np.real(eigvals), np.imag(eigvals), 'X', label=r"$\lambda$")
-plt.plot(0,0, 'ob')
-circle = plt.Circle((0, 0), lam1, color='r', fill=False)
-plt.gcf().gca().add_artist(circle)
-# il faut rajouter notre cercle à un axis
-# plt.gcf() donne la figure actuelle 'current figure' et gca() donne le current axis
-size = 1.1*lam1
-plt.xlim((-size,size))
-plt.ylim((-size,size))
-plt.gcf().gca().set_aspect('equal')
-# fait que les échelles sont les mêmes en x et en y
-plt.ylabel('Im')
-plt.xlabel('Re')
-plt.legend()
-plt.title(r"Nous avons $\lambda_1\approx${}".format(np.round(lam1,3)))
-plt.show()
 
-A, u = exemple3()
-niter = 20
-for iter in range(niter):
-    v = A.dot(u)
-    lam = np.sum(v)/np.sum(u)
-    v /= np.sum(v)
-    print("iter", iter, "lam", lam, "26*v=", 26*v.T)
-    u = v
+#------------------------------------------------
+def plotEigVals(A):
+    eigvals = linalg.eigvals(A)
+    print("eigvals", eigvals)
+    lam1 = np.max(np.absolute(eigvals))
+    # calcul de la v.p. de Perron-Frobenius (= rayon spectral)
+    plt.plot(np.real(eigvals), np.imag(eigvals), 'X', label=r"$\lambda$")
+    plt.plot(0, 0, 'ob')
+    plt.plot([-lam1,lam1],[0,0], 'k-')
+    circle = plt.Circle((0, 0), lam1, color='r', fill=False)
+    plt.gcf().gca().add_artist(circle)
+    # il faut rajouter notre cercle à un axis
+    # plt.gcf() donne la figure actuelle 'current figure' et gca() donne le current axis
+    size = 1.1 * lam1
+    plt.xlim((-size, size))
+    plt.ylim((-size, size))
+    plt.gcf().gca().set_aspect('equal')
+    # fait que les échelles sont les mêmes en x et en y
+    plt.ylabel('Im')
+    plt.xlabel('Re')
+    plt.legend()
+    plt.title(r"Nous avons $\lambda_1\approx${}".format(np.round(lam1, 3)))
+    plt.show()
+
+
+# A = np.random.rand(8,8)
+# print("A", A)
+# plotEigVals(A)
+# import sys
+# sys.exit(1)
+#
+A, u = exemple2()
+solveOde(u, A)
+plotEigVals(A)
+powerIteration(u, A)
